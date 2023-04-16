@@ -5,6 +5,13 @@ from bs4 import BeautifulSoup
 import html2text
 
 
+class JSONDecodeError(Exception):
+    pass
+
+
+class FileWriteError(Exception):
+    pass
+
 def parse_arguments() -> argparse.Namespace:
     """
     Parse command-line arguments.
@@ -46,8 +53,7 @@ def to_text(input_file: argparse.FileType, output_file: argparse.FileType) -> No
         data = json.load(input_file)
         html_content = data['body']['storage']['value']
     except json.JSONDecodeError as e:
-        print(f"Error parsing JSON: {e}")
-        sys.exit(1)
+        raise JSONDecodeError(f"Error parsing JSON: {e}")
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -62,14 +68,20 @@ def to_text(input_file: argparse.FileType, output_file: argparse.FileType) -> No
     try:
         output_file.write(plain_text)
     except IOError as e:
-        print(f"Error writing output file: {e}")
-        sys.exit(1)
+        raise FileWriteError(f"Error writing output file: {e}")
 
 
 def main() -> None:
+    """
+    Execute the main function of the script: parse command-line arguments, then convert the Confluence JSON file to plain text.
+    """
     args = parse_arguments()
     with args.input_file as input_file, args.output_file as output_file:
-        to_text(input_file, output_file)
+        try:
+            to_text(input_file, output_file)
+        except (JSONDecodeError, FileWriteError) as e:
+            print(e)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
