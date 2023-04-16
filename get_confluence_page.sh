@@ -44,7 +44,7 @@ handle_response() {
     local output_file="$2"
     local http_status=$(echo "$response" | grep -oP 'HTTPSTATUS:\K\d+')
     local content_type=$(echo "$response" | grep -oP 'CONTENT_TYPE:\K[^;]+' || echo "unknown")
-    local api_result=$(echo "$response" | sed 's/;HTTPSTATUS:[0-9]*;CONTENT_TYPE:[^;]*$//')
+    local api_result=$(echo "$response" | sed 's/HTTPSTATUS:[0-9]*;CONTENT_TYPE:[^;]*$//')
 
     if [ "$http_status" -ge 400 ]; then
         if [[ "$content_type" == "application/json" ]]; then
