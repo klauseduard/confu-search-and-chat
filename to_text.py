@@ -13,8 +13,8 @@ def parse_arguments() -> argparse.Namespace:
         argparse.Namespace: Parsed command-line arguments.
     """
     parser = argparse.ArgumentParser(description='Convert Confluence JSON to plain text.')
-    parser.add_argument('input_file', type=str, help='Path to the input JSON file.')
-    parser.add_argument('output_file', type=str, help='Path to the output plain text file.')
+    parser.add_argument('input_file', type=argparse.FileType('r'), help='Path to the input JSON file.')
+    parser.add_argument('output_file', type=argparse.FileType('w'), help='Path to the output plain text file.')
 
     return parser.parse_args()
 
@@ -33,20 +33,19 @@ def configure_html2text() -> html2text.HTML2Text:
     return text_maker
 
 
-def to_text(input_file:str, output_file:str) -> None:
+def to_text(input_file: argparse.FileType, output_file: argparse.FileType) -> None:
     """
     Convert a Confluence JSON file to plain text, preserving preformatted text.
 
     Args:
-        input_file (str): Path to the input JSON file.
-        output_file (str): Path to the output plain text file.
+        input_file (argparse.FileType): Input JSON file object.
+        output_file (argparse.FileType): Output plain text file object.
     """
     try:
-        with open(input_file, 'r') as f:
-            data = json.load(f)
-            html_content = data['body']['storage']['value']
-    except (FileNotFoundError, IOError) as e:
-        print(f"Error reading input file: {e}")
+        data = json.load(input_file)
+        html_content = data['body']['storage']['value']
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON: {e}")
         sys.exit(1)
 
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -60,15 +59,16 @@ def to_text(input_file:str, output_file:str) -> None:
     plain_text = text_maker.handle(str(soup))
 
     try:
-        with open(output_file, 'w') as f:
-            f.write(plain_text)
-    except (FileNotFoundError, IOError) as e:
+        output_file.write(plain_text)
+    except IOError as e:
         print(f"Error writing output file: {e}")
         sys.exit(1)
 
 def main() -> None:
     args = parse_arguments()
     to_text(args.input_file, args.output_file)
+    args.input_file.close()
+    args.output_file.close()
 
 
 if __name__ == "__main__":
