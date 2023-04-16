@@ -10,6 +10,13 @@
 E_BADARGS=65
 E_MISSING_UTILITY=67
 
+# Function for cleaning up temporary files and directories
+cleanup() {
+    rm -rf "$output_dir"
+}
+
+# Error handling
+trap cleanup ERR
 
 # Check if required scripts and utilities are available
 for script in get_confluence_page.sh update_request.sh get_embeddings.sh store_in_redis.sh; do
@@ -62,3 +69,6 @@ python3 preprocess.py $output_dir/confluence_page_plaintext.txt $output_dir/prep
 ./update_request.sh $output_dir/preprocessed.txt
 ./get_embeddings.sh > embeddings.json
 ./store_in_redis.sh "$PAGE_ID"
+
+# Clean up temporary files and directories
+cleanup
