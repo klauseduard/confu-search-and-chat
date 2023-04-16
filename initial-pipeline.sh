@@ -12,7 +12,7 @@ E_MISSING_UTILITY=67
 
 
 # Check if required scripts and utilities are available
-for script in get_confluence_page.sh to_text.sh update_request.sh get_embeddings.sh store_in_redis.sh; do
+for script in get_confluence_page.sh update_request.sh get_embeddings.sh store_in_redis.sh; do
     if ! command -v ./$script >/dev/null 2>&1; then
         echo "Error: Script $script is required but not found in the current directory." >&2
         exit $E_MISSINGUTILITY
