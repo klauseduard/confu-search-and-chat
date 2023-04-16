@@ -18,6 +18,20 @@ def parse_arguments() -> argparse.Namespace:
 
     return parser.parse_args()
 
+def configure_html2text() -> html2text.HTML2Text:
+    """
+    Configure and return an instance of html2text.HTML2Text.
+
+    Returns:
+        html2text.HTML2Text: Configured instance of html2text.HTML2Text.
+    """
+    text_maker = html2text.HTML2Text()
+    text_maker.body_width = 0
+    text_maker.ignore_links = True
+    text_maker.ignore_images = True
+
+    return text_maker
+
 
 def to_text(input_file:str, output_file:str) -> None:
     """
@@ -42,10 +56,7 @@ def to_text(input_file:str, output_file:str) -> None:
         pre_tag.string = f"```\n{pre_tag.string}\n```"
 
     # Convert HTML to plain text
-    text_maker = html2text.HTML2Text()
-    text_maker.body_width = 0
-    text_maker.ignore_links = True
-    text_maker.ignore_images = True
+    text_maker = configure_html2text()
     plain_text = text_maker.handle(str(soup))
 
     try:
