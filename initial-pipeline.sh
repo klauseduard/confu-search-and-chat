@@ -54,7 +54,7 @@ fi
 ./get_confluence_page.sh -P "$PAGE_ID" -o "$output_dir/confluence_page.json"
 
 # Convert the data stored as json to plain text
-./to_text.sh $output_dir/confluence_page.json $output_dir/confluence_page_plaintext.txt
+python3 to_text.py $output_dir/confluence_page.json $output_dir/confluence_page_plaintext.txt
 
 # Preprocess the text to better suit the needs of Embeddings API
 python3 preprocess.py $output_dir/confluence_page_plaintext.txt $output_dir/preprocessed.txt
