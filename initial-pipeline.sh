@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# The initial pipeline for generationg embeddings for a single page and storing those in Redis
+# The initial pipeline for generating embeddings for a single page and storing those in Redis
 #
 # The outline will change, as we went to store some metadata along with the embeddings.
 #
@@ -22,7 +22,7 @@ trap cleanup ERR
 
 # Check if required scripts and utilities are available
 for script in get_confluence_page.sh update_request.sh get_embeddings.sh store_in_redis.sh; do
-    if ! command -v ./$script >/dev/null 2>&1; then
+    if ! command -v ./"$script" >/dev/null 2>&1; then
         echo "Error: Script $script is required but not found in the current directory." >&2
         exit $E_MISSINGUTILITY
     fi
@@ -63,12 +63,12 @@ fi
 ./get_confluence_page.sh -P "$PAGE_ID" -o "$output_dir/confluence_page.json"
 
 # Convert the data stored as json to plain text
-python3 to_text.py $output_dir/confluence_page.json $output_dir/confluence_page_plaintext.txt
+python3 to_text.py "$output_dir/confluence_page.json" "$output_dir/confluence_page_plaintext.txt"
 
 # Preprocess the text to better suit the needs of Embeddings API
-python3 preprocess.py $output_dir/confluence_page_plaintext.txt $output_dir/preprocessed.txt
+python3 preprocess.py "$output_dir/confluence_page_plaintext.txt" "$output_dir/preprocessed.txt"
 
-./update_request.sh $output_dir/preprocessed.txt
+./update_request.sh "$output_dir/preprocessed.txt"
 ./get_embeddings.sh > embeddings.json
 ./store_in_redis.sh "$PAGE_ID"
 
