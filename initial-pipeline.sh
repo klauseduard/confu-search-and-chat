@@ -15,8 +15,10 @@
 # -o pipefail: ensure a pipeline fails if any command of the pipeline fails
 set -eEuo pipefail
 
-E_BADARGS=65
-E_MISSING_UTILITY=67
+
+# Define constants as read-only variables
+readonly E_BADARGS=65
+readonly E_MISSING_UTILITY=67
 
 # Function for cleaning up temporary files and directories
 cleanup() {
@@ -39,14 +41,14 @@ trap handle_error ERR
 for script in get_confluence_page.sh update_request.sh get_embeddings.sh store_in_redis.sh; do
     if ! command -v ./"$script" >/dev/null 2>&1; then
         echo "Error: Script $script is required but not found in the current directory." >&2
-        exit $E_MISSINGUTILITY
+        exit $E_MISSING_UTILITY
     fi
 done
 
 # Check if python3 is available
 if ! command -v python3 >/dev/null 2>&1; then
     echo "Error: python3 interpreter is required but not installed." >&2
-    exit $E_MISSINGUTILITY
+    exit $E_MISSING_UTILITY
 fi
 
 
