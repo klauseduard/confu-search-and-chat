@@ -14,7 +14,10 @@ E_MISSING_UTILITY=67
 
 # Function for cleaning up temporary files and directories
 cleanup() {
-    rm -rf "$output_dir"
+    if [ -d "$output_dir" ]; then
+        rm -rf "$output_dir"
+        echo "Directory removed: $output_dir"
+    fi
 }
 
 # Error handling
