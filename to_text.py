@@ -5,6 +5,13 @@ from bs4 import BeautifulSoup
 import html2text
 
 def main(input_file, output_file):
+    """
+    Convert a Confluence JSON file to plain text, preserving preformatted text.
+
+    Args:
+        input_file (str): Path to the input JSON file.
+        output_file (str): Path to the output plain text file.
+    """
     with open(input_file, 'r') as f:
         data = json.load(f)
         html_content = data['body']['storage']['value']
