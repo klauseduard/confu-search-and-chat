@@ -18,6 +18,7 @@ def parse_arguments() -> argparse.Namespace:
 
     return parser.parse_args()
 
+
 def configure_html2text() -> html2text.HTML2Text:
     """
     Configure and return an instance of html2text.HTML2Text.
@@ -64,11 +65,11 @@ def to_text(input_file: argparse.FileType, output_file: argparse.FileType) -> No
         print(f"Error writing output file: {e}")
         sys.exit(1)
 
+
 def main() -> None:
     args = parse_arguments()
-    to_text(args.input_file, args.output_file)
-    args.input_file.close()
-    args.output_file.close()
+    with args.input_file as input_file, args.output_file as output_file:
+        to_text(input_file, output_file)
 
 
 if __name__ == "__main__":
