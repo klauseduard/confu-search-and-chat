@@ -86,16 +86,24 @@ fi
 
 
 # Download a confluence page and save it to output folder
+echo "Performing operation: get_confluence_page.sh"
 ./get_confluence_page.sh -P "$PAGE_ID" -o "$output_dir/confluence_page.json"
 
 # Convert the data stored as json to plain text
+echo "Performing operation: to_text.py"
 python3 to_text.py "$output_dir/confluence_page.json" "$output_dir/confluence_page_plaintext.txt"
 
 # Preprocess the text to better suit the needs of Embeddings API
+echo "Performing operation: preprocess.py"
 python3 preprocess.py "$output_dir/confluence_page_plaintext.txt" "$output_dir/preprocessed.txt"
 
+echo "Performing operation: update_request.sh"
 ./update_request.sh "$output_dir/preprocessed.txt"
+
+echo "Performing operation: get_embeddings.sh"
 ./get_embeddings.sh > embeddings.json
+
+echo "Performing operation: store_in_redis.sh"
 ./store_in_redis.sh "$PAGE_ID"
 
 # Clean up temporary files and directories
