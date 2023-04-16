@@ -2,9 +2,11 @@
 #
 # The initial pipeline for generating embeddings for a single page and storing those in Redis
 #
-# The outline will change, as we went to store some metadata along with the embeddings.
+# This script downloads a Confluence page and generates OpenAI embeddings for its content.
+# The embeddings are stored in Redis, along with some metadata about the page.
 #
-# Also, we will probably try pickle format for storing the embeddings.
+# PAGE_ID is the unique identifier of the Confluence page to process. You can find
+# the PAGE_ID in the URL of the page: it is the number that appears after "pageId=".
 #
 
 
@@ -58,6 +60,13 @@ cat <<USAGE
 
 Usage:
     $(basename "$0") PAGE_ID
+
+This script downloads a Confluence page and generates OpenAI embeddings for its content.
+The embeddings are stored in Redis, along with some metadata about the page.
+
+PAGE_ID is the unique identifier of the Confluence page to process. You can find
+the PAGE_ID in the URL of the page: it is the number that appears after "pageId=".
+
 
 Example: $(basename "$0") 1111
 
