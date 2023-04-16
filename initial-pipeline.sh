@@ -7,6 +7,8 @@
 # Also, we will probably try pickle format for storing the embeddings.
 #
 
+set -e
+
 E_BADARGS=65
 E_MISSING_UTILITY=67
 
