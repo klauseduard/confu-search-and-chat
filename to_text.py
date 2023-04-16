@@ -1,5 +1,6 @@
 import sys
 import json
+import argparse
 from bs4 import BeautifulSoup
 import html2text
 
@@ -25,8 +26,10 @@ def main(input_file, output_file):
         f.write(plain_text)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print(f"Usage: python {sys.argv[0]} input_file output_file")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description='Convert Confluence JSON to plain text.')
+    parser.add_argument('input_file', help='Path to the input JSON file.')
+    parser.add_argument('output_file', help='Path to the output plain text file.')
 
-    main(sys.argv[1], sys.argv[2])
+    args = parser.parse_args()
+    
+    main(args.input_file, args.output_file)
