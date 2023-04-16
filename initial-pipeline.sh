@@ -91,11 +91,11 @@ echo "Performing operation: get_confluence_page.sh"
 
 # Convert the data stored as json to plain text
 echo "Performing operation: to_text.py"
-./to_text.py "$output_dir/confluence_page.json" "$output_dir/confluence_page_plaintext.txt"
+./to_text.py "$output_dir/confluence_page.json" "$output_dir/confluence_page_plaintext.txt" "$output_dir/confluence_page_title.txt"
 
 # Preprocess the text to better suit the needs of Embeddings API
 echo "Performing operation: preprocess.py"
-./preprocess.py "$output_dir/confluence_page_plaintext.txt" "$output_dir/preprocessed.txt"
+./preprocess.py "$output_dir/confluence_page_plaintext.txt" "$output_dir/preprocessed.txt" "$output_dir/confluence_page_title.txt"
 
 echo "Performing operation: update_request.sh"
 ./update_request.sh "$output_dir/preprocessed.txt"

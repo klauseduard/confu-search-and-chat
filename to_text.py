@@ -24,6 +24,7 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Convert Confluence JSON to plain text.')
     parser.add_argument('input_file', type=argparse.FileType('r'), metavar='INPUT_FILE', help='Path to the input JSON file.')
     parser.add_argument('output_file', type=argparse.FileType('w'), metavar='OUTPUT_FILE', help='Path to the output plain text file.')
+    parser.add_argument('title_output_file', type=argparse.FileType('w'), metavar='TITLE_OUTPUT_FILE', help='Path to the output title file.')
 
     return parser.parse_args()
 
@@ -43,19 +44,27 @@ def configure_html2text() -> html2text.HTML2Text:
     return text_maker
 
 
-def to_text(input_file: argparse.FileType, output_file: argparse.FileType) -> None:
+def to_text(input_file: argparse.FileType, output_file: argparse.FileType, title_output_file: argparse.FileType) -> None:
     """
     Convert a Confluence JSON file to plain text, preserving preformatted text.
 
     Args:
         input_file (argparse.FileType): Input JSON file object.
         output_file (argparse.FileType): Output plain text file object.
+        title_output_file (argparse.FileType): Output title file object.
     """
     try:
         data = json.load(input_file)
         html_content = data['body']['storage']['value']
+        title = data['title']
     except json.JSONDecodeError as e:
         raise JSONDecodeError(f"Error parsing JSON: {e}")
+
+    # Write the title to the title output file
+    try:
+        title_output_file.write(title)
+    except IOError as e:
+        raise FileWriteError(f"Error writing title output file: {e}")
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -78,13 +87,12 @@ def main() -> None:
     Execute the main function of the script: parse command-line arguments, then convert the Confluence JSON file to plain text.
     """
     args = parse_arguments()
-    with args.input_file as input_file, args.output_file as output_file:
+    with args.input_file as input_file, args.output_file as output_file, args.title_output_file as title_output_file:
         try:
-            to_text(input_file, output_file)
+            to_text(input_file, output_file, title_output_file)
         except (JSONDecodeError, FileWriteError) as e:
             print(e)
             sys.exit(1)
-
 
 if __name__ == "__main__":
     main()

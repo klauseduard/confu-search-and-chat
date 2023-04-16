@@ -51,6 +51,7 @@ def get_arguments():
     parser = argparse.ArgumentParser(description='Preprocess text for generating embeddings.')
     parser.add_argument('input_file', type=str, help='path to input file')
     parser.add_argument('output_file', type=str, help='path to output file')
+    parser.add_argument('title_file', type=str, help='path to the title file')
     parser.add_argument('--chunk_size', type=int, default=2048, help='maximum chunk size')
     return parser.parse_args()
 
@@ -59,16 +60,22 @@ def get_tokens(text):
     return parser.parse()
 
 
-def get_chunks(tokens, chunk_size):
+def get_chunks(tokens, chunk_size, title):
     chunks = []
     current_chunk = ""
     start_indexes = []
     end_indexes = []
     current_start_index = 0
+    # TODO: no time to check now, but there is something wrong with categorizing
+    #       either the first block or the non-code blocks preceeding the code blocks.
+    #       (or the concept of current chunk)
+    chunk_number = 1
     for token in tokens:
         if token.token_type == TokenType.CODE_BLOCK:
             if current_chunk:
-                chunks.append(current_chunk)
+                chunks.append(f"{title} ({chunk_number})\n{current_chunk}")
+                #chunks.append(current_chunk)
+                chunk_number += 1
                 start_indexes.append(current_start_index)
                 current_start_index += len(current_chunk)
                 end_indexes.append(current_start_index-1)
@@ -77,16 +84,18 @@ def get_chunks(tokens, chunk_size):
             chunks.append(token.text)
             current_start_index += len(token.text)
             end_indexes.append(current_start_index-1)
+
         else:
             if len(current_chunk) + len(token.text) > chunk_size:
-                chunks.append(current_chunk)
+                chunks.append(f"{title} ({chunk_number})\n{current_chunk}")
                 start_indexes.append(current_start_index)
                 current_start_index += len(current_chunk)
                 end_indexes.append(current_start_index-1)
                 current_chunk = ""
+                chunk_number += 1
             current_chunk += token.text
     if current_chunk:
-        chunks.append(current_chunk)
+        chunks.append(f"{title} ({chunk_number})\n{current_chunk}")
         start_indexes.append(current_start_index)
         current_start_index += len(current_chunk)
         end_indexes.append(current_start_index-1)
@@ -100,7 +109,7 @@ def normalize_quotes(text):
     return "".join(quote_mapping.get(c, c) for c in text)
 
 
-def preprocess(text, chunk_size):
+def preprocess(text, chunk_size, title):
     """Preprocesses the input text for generating embeddings."""
     # Normalize Unicode characters
     text = unicodedata.normalize('NFC', text)
@@ -112,7 +121,7 @@ def preprocess(text, chunk_size):
     tokens = get_tokens(text)
 
     # Split tokens into chunks of size CHUNK_SIZE
-    chunks, start_indexes, end_indexes = get_chunks(tokens, chunk_size)
+    chunks, start_indexes, end_indexes = get_chunks(tokens, chunk_size, title)
 
     # Remove leading/trailing whitespace and replace consecutive whitespace with a single space
     cleaned_chunks = []
@@ -128,7 +137,11 @@ if __name__ == "__main__":
         args = get_arguments()
         with open(args.input_file, "r", encoding="utf-8") as input_file:
             text = input_file.read()
-            chunks, start_indexes, end_indexes = preprocess(text, args.chunk_size)
+        with open(args.title_file, "r", encoding="utf-8") as title_file:
+            title = title_file.read().strip()
+
+        chunks, start_indexes, end_indexes = preprocess(text, args.chunk_size, title)
+
         with open(args.output_file, "w", encoding="utf-8") as output_file:
             for chunk in chunks:
                 output_file.write(chunk + "\n") # Add newline character between chunks
