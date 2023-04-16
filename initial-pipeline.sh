@@ -7,7 +7,13 @@
 # Also, we will probably try pickle format for storing the embeddings.
 #
 
-set -e
+
+# -e: exit immediately id any command in scripy returns non-zero exit code
+# -E: enables error tracing, causes functions and subshells to inherit the trap
+#    setting from the parent shell
+# -u: treat undefined variables as an error and exit immediately
+# -o pipefail: ensure a pipeline fails if any command of the pipeline fails
+set -eEuo pipefail
 
 E_BADARGS=65
 E_MISSING_UTILITY=67
@@ -21,7 +27,13 @@ cleanup() {
 }
 
 # Error handling
-trap cleanup ERR
+handle_error() {
+    local exit_code=$?
+    echo "Error: command exited with status $exit_code." >&2
+    cleanup
+    exit "$exit_code"
+}
+trap handle_error ERR
 
 # Check if required scripts and utilities are available
 for script in get_confluence_page.sh update_request.sh get_embeddings.sh store_in_redis.sh; do
