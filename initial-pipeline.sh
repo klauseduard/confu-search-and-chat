@@ -40,7 +40,7 @@ handle_error() {
 trap handle_error ERR
 
 # Check if required scripts and utilities are available
-for script in get_confluence_page.sh to_text.py preprocess.py update_request.sh get_embeddings.sh store_in_redis.sh; do
+for script in get_confluence_page.sh to_text.py preprocess.py update_request.sh embeddings.py; do
     if ! command -v ./"$script" >/dev/null 2>&1; then
         echo "Error: Script $script is required but not found in the current directory." >&2
         exit $E_MISSING_UTILITY
@@ -97,14 +97,9 @@ echo "Performing operation: to_text.py"
 echo "Performing operation: preprocess.py"
 ./preprocess.py "$output_dir/confluence_page_plaintext.txt" "$output_dir/preprocessed.txt" "$output_dir/confluence_page_title.txt"
 
-echo "Performing operation: update_request.sh"
-./update_request.sh "$output_dir/preprocessed.txt"
+echo "Performing operation: embeddings.py"
+./embeddings.py "$output_dir/preprocessed.txt" "embeddings.pkl" $PAGE_ID
 
-echo "Performing operation: get_embeddings.sh"
-./get_embeddings.sh > embeddings.json
-
-echo "Performing operation: store_in_redis.sh"
-./store_in_redis.sh "$PAGE_ID"
 
 # Clean up temporary files and directories
 cleanup
