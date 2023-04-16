@@ -13,8 +13,8 @@ def parse_arguments() -> argparse.Namespace:
         argparse.Namespace: Parsed command-line arguments.
     """
     parser = argparse.ArgumentParser(description='Convert Confluence JSON to plain text.')
-    parser.add_argument('input_file', type=argparse.FileType('r'), help='Path to the input JSON file.')
-    parser.add_argument('output_file', type=argparse.FileType('w'), help='Path to the output plain text file.')
+    parser.add_argument('input_file', type=argparse.FileType('r'), metavar='INPUT_FILE', help='Path to the input JSON file.')
+    parser.add_argument('output_file', type=argparse.FileType('w'), metavar='OUTPUT_FILE', help='Path to the output plain text file.')
 
     return parser.parse_args()
 
