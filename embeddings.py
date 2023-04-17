@@ -62,7 +62,7 @@ def main(args):
     # Read the input file
     try:
         with open(args.input_file, 'r', encoding='utf-8') as infile:
-            lines = [{'text' : line.strip(), 'url': 'confluence.nortal.com', 'line_number': i} for i, line in enumerate(infile)]
+            lines = [{'text' : line.strip(), 'url': 'TODO', 'line_number': i} for i, line in enumerate(infile)]
     except IOError:
         print(f'Error: Cannot open input file {args.input_file}')
         return
