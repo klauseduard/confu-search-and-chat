@@ -40,7 +40,7 @@ handle_error() {
 trap handle_error ERR
 
 # Check if required scripts and utilities are available
-for script in get_confluence_page.sh to_text.py preprocess.py update_request.sh embeddings.py; do
+for script in get_confluence_page.sh to_text.py preprocess.py embeddings.py; do
     if ! command -v ./"$script" >/dev/null 2>&1; then
         echo "Error: Script $script is required but not found in the current directory." >&2
         exit $E_MISSING_UTILITY
