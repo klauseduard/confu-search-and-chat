@@ -81,7 +81,7 @@ def main(args):
 
     # Store embeddings and metadata in Redis
     for embedding, meta in zip(embeddings, metadata):
-        key_prefix = f"page_{args.page_id}_line_{meta['line_number']}"
+        key_prefix = f"confluence_embeddings:page_{args.page_id}_line_{meta['line_number']}"
         r.set(f"{key_prefix}_embedding", pickle.dumps(embedding))
         r.set(f"{key_prefix}_metadata", pickle.dumps(meta))
 
