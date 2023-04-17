@@ -7,7 +7,8 @@ I am publishing parts of it because I intend to use it as an example of what can
 writing and refactoring code (well, bash and python) with the help of chatGPT (or certain OpenAI
 APIs).
 
-Currently available: download and preprocess (break into chunks) of a Confluence page.
-
-Currently missing: embed, store embeddings, embed query, cosine similarity, and next steps I
-won't even mention now.
+Currently available:
+* download and preprocess (break into chunks) of a Confluence page,
+* create embeddings with chunks prefixed by page title
+* store pickled embeddings and metadata in Redis
+* semantic search returning relevant Redis keys
