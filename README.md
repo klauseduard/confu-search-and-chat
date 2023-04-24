@@ -27,7 +27,10 @@ Currently not available:
 I will document the requirements later but for now:
 * You need Redis -- to be used as vector database.
 * You need curl and whatever utilities the remaining shell scripts require.
-* You need pip and possibly install a couple of python libraries required by various scripts.
+* You need pip and possibly install a couple of python libraries required by various scripts:
+
+`pip install -r requirements.txt`
+
 
 ## Configuration
 
@@ -36,4 +39,5 @@ copy confluence.example.conf to confluence.conf, define your api key and a url
 copy openai.example.ini to openai.ini and modify it (api key only I guess)
 
 copy redis.example.ini to redis.ini and modify it if you really need to
+
 
