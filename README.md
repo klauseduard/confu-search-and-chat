@@ -1,43 +1,40 @@
 # confu-search-and-chat
 
-## Intro
-Wannabe semantic search and chat experiment on top of on-premise Confluence installation.
+> **Note (2026):** This is an archived experiment from early 2023. The approach — chunking
+> Confluence pages, generating OpenAI embeddings, storing them in Redis, and doing cosine-similarity
+> search — was a reasonable DIY take on what is now commonly known as RAG (Retrieval-Augmented
+> Generation). Today you'd reach for a framework like LangChain or LlamaIndex with a proper vector
+> store instead of hand-rolling this. The code here uses `openai==0.27.4` which predates the
+> breaking 1.0 rewrite and will not run against current versions without changes. Kept as-is for
+> historical interest.
 
-~~Please note that I'm not publishing the full pipeline before I'm relatively satisfied with it.~~
+## What this was
 
-I am publishing parts of it because I intend to use it as an example of what can be accomplished
-writing and refactoring code (well, bash and python) with the help of chatGPT (or certain OpenAI
-APIs).
+An early experiment in semantic search over on-premise Confluence, built iteratively with the help
+of ChatGPT (GPT-3.5 / GPT-4). The goal was to explore what could be accomplished writing and
+refactoring bash and Python with LLM assistance.
 
-Currently available:
-* download and preprocess (break into chunks) of a Confluence page,
-* create embeddings with chunks prefixed by page title
-* store pickled embeddings and metadata in Redis
-* semantic search returning relevant Redis keys
+The pipeline:
+1. Download a Confluence page via REST API (`get_confluence_page.sh`)
+2. Convert HTML body to plain text (`to_text.py`)
+3. Chunk the text, separating code blocks from prose (`preprocess.py`)
+4. Generate embeddings via OpenAI and store in Redis (`embeddings.py`)
+5. Search by cosine similarity against stored embeddings (`semantic_search.py`)
 
-Currently not available:
-* the chat or search summary or whatever
-* niceties like page title and url in search results
-* exagerations like the chunk sequence number in search results
-* time to implement these simple things 
+What was never implemented: the "chat" part — using retrieved chunks as context for an LLM answer.
 
+## Requirements
 
-## Requirements 
-
-I will document the requirements later but for now:
-* You need Redis -- to be used as vector database.
-* You need curl and whatever utilities the remaining shell scripts require.
-* You need pip and possibly install a couple of python libraries required by various scripts:
-
-`pip install -r requirements.txt`
-
+* Redis (used as a vector store via plain key-value + pickled embeddings)
+* `curl`, `jq`
+* Python 3 with `pip install -r requirements.txt`
 
 ## Configuration
 
-copy confluence.example.conf to confluence.conf, define your api key and a url
+Copy the example config files and fill in your credentials:
 
-copy openai.example.ini to openai.ini and modify it (api key only I guess)
-
-copy redis.example.ini to redis.ini and modify it if you really need to
+* `confluence.example.conf` → `confluence.conf` (username, password, base API URL)
+* `openai.example.ini` → `openai.ini` (API key)
+* `redis.example.ini` → `redis.ini` (host, port, db — defaults work for local Redis)
 
 
